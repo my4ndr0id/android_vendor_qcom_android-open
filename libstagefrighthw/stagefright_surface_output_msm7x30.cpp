@@ -17,6 +17,7 @@
 
 #include <media/stagefright/HardwareAPI.h>
 #include "QComHardwareOverlayRenderer.h"
+#include "QComHardwareRenderer.h"
 #define LOG_TAG "StagefrightSurfaceOutput7630"
 #include <utils/Log.h>
 
@@ -31,10 +32,12 @@ VideoRenderer *createRenderer(
         size_t displayWidth, size_t displayHeight,
         size_t decodedWidth, size_t decodedHeight) {
     using android::QComHardwareOverlayRenderer;
+    using android::QComHardwareRenderer;
 
 
     static const int QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka = 0x7FA30C03;
 
+#ifndef SURF7x30
     if((colorFormat == OMX_COLOR_FormatYUV420SemiPlanar || colorFormat == QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka)
         && !strncmp(componentName, "OMX.qcom.video.decoder.", 23)) {
         LOGV("StagefrightSurfaceOutput7x30::createRenderer");
@@ -43,6 +46,24 @@ VideoRenderer *createRenderer(
                 displayWidth, displayHeight,
                 decodedWidth, decodedHeight);
     }
+#else
+    if(colorFormat == OMX_COLOR_FormatYUV420SemiPlanar
+        && !strncmp(componentName, "OMX.qcom.video.decoder.", 23)) {
+        LOGV("StagefrightSurfaceOutput7x30::createRenderer QComHardwareOverlayRenderer");
+        return new QComHardwareOverlayRenderer(
+                surface, colorFormat,
+                displayWidth, displayHeight,
+                decodedWidth, decodedHeight);
+    }
+    else if (colorFormat == QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka
+        && !strncmp(componentName, "OMX.qcom.video.decoder.", 23)) {
+        LOGV("StagefrightSurfaceOutput7x30::createRenderer QComHardwareRenderer");
+        return new QComHardwareRenderer(
+                surface, colorFormat,
+                displayWidth, displayHeight,
+                decodedWidth, decodedHeight);
+    }
+#endif
 
     LOGE("error: StagefrightSurfaceOutput7x30::createRenderer returning NULL!");
     return NULL;

@@ -10,10 +10,17 @@ endif
 ifneq (, $(filter msm7630_surf msm8660_surf msm7630_fusion, $(TARGET_PRODUCT)))
 LOCAL_SRC_FILES := \
     stagefright_surface_output_msm7x30.cpp \
-    QComHardwareOverlayRenderer.cpp
+    QComHardwareOverlayRenderer.cpp \
+    QComHardwareRenderer.cpp
 endif
 
 LOCAL_CFLAGS := $(PV_CFLAGS_MINUS_VISIBILITY)
+
+ifeq ($(TARGET_BOARD_PLATFORM),msm7k)
+    ifeq ($(BOARD_USES_QCOM_AUDIO_V2), true)
+        LOCAL_CFLAGS += -DSURF7x30
+    endif
+endif
 
 LOCAL_C_INCLUDES:= \
         $(TOP)/external/opencore/extern_libs_v2/khronos/openmax/include

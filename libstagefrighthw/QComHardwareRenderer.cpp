@@ -67,9 +67,11 @@ typedef struct PLATFORM_PRIVATE_PMEM_INFO
 
 QComHardwareRenderer::QComHardwareRenderer(
         const sp<ISurface> &surface,
+        OMX_COLOR_FORMATTYPE colorFormat,
         size_t displayWidth, size_t displayHeight,
         size_t decodedWidth, size_t decodedHeight)
     : mISurface(surface),
+      mColorFormat(colorFormat),
       mDisplayWidth(displayWidth),
       mDisplayHeight(displayHeight),
       mDecodedWidth(decodedWidth),
@@ -150,11 +152,20 @@ void QComHardwareRenderer::publishBuffers(uint32_t pmem_fd) {
     mMemoryHeap = new MemoryHeapPmem(master, heap_flags);
     mMemoryHeap->slap();
 
+    PixelFormat HALPixelFormat = HAL_PIXEL_FORMAT_YCrCb_420_SP;
+
+#ifdef SURF7x30
+    static const int QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka = 0x7FA30C03;
+
+    if (mColorFormat == QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka) {
+        HALPixelFormat = HAL_PIXEL_FORMAT_YCbCr_420_SP_TILED;
+    }
+#endif
+
     ISurface::BufferHeap bufferHeap(
             mDisplayWidth, mDisplayHeight,
             mDecodedWidth, mDecodedHeight,
-            HAL_PIXEL_FORMAT_YCrCb_420_SP,
-            mMemoryHeap);
+            HALPixelFormat, mMemoryHeap);
 
     status_t err = mISurface->registerBuffers(bufferHeap);
     CHECK_EQ(err, OK);

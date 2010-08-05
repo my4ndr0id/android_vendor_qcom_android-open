@@ -19,7 +19,8 @@ VideoRenderer *createRenderer(
     if (colorFormat == OMX_QCOM_COLOR_FormatYVU420SemiPlanar
         && !strncmp(componentName, "OMX.qcom.video.decoder.", 23)) {
         return new QComHardwareRenderer(
-                surface, displayWidth, displayHeight,
+                surface, colorFormat,
+                displayWidth, displayHeight,
                 decodedWidth, decodedHeight);
     }
 
