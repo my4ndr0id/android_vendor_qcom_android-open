@@ -36,9 +36,12 @@ VideoRenderer *createRenderer(
 
 
     static const int QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka = 0x7FA30C03;
+    static const int OMX_QCOM_COLOR_FormatYVU420SemiPlanarInterlace = 0x7FA30C04;
 
 #ifndef SURF7x30
-    if((colorFormat == OMX_COLOR_FormatYUV420SemiPlanar || colorFormat == QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka)
+    if((colorFormat == OMX_COLOR_FormatYUV420SemiPlanar ||
+        colorFormat == QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka ||
+        colorFormat == OMX_QCOM_COLOR_FormatYVU420SemiPlanarInterlace)
         && !strncmp(componentName, "OMX.qcom.video.decoder.", 23)) {
         LOGV("StagefrightSurfaceOutput7x30::createRenderer");
         return new QComHardwareOverlayRenderer(
@@ -47,7 +50,8 @@ VideoRenderer *createRenderer(
                 decodedWidth, decodedHeight);
     }
 #else
-    if(colorFormat == OMX_COLOR_FormatYUV420SemiPlanar
+    if((colorFormat == OMX_COLOR_FormatYUV420SemiPlanar ||
+       colorFormat == OMX_QCOM_COLOR_FormatYVU420SemiPlanarInterlace)
         && !strncmp(componentName, "OMX.qcom.video.decoder.", 23)) {
         LOGV("StagefrightSurfaceOutput7x30::createRenderer QComHardwareOverlayRenderer");
         return new QComHardwareOverlayRenderer(

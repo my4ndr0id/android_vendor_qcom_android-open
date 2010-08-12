@@ -84,6 +84,8 @@ QComHardwareOverlayRenderer::QComHardwareOverlayRenderer(
       mLastFrameTime(0) {
 
     static const int QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka = 0x7FA30C03;
+    static const int OMX_QCOM_COLOR_FormatYVU420SemiPlanarInterlace = 0x7FA30C04;
+
     CHECK(mISurface.get() != NULL);
     CHECK(mDecodedWidth > 0);
     CHECK(mDecodedHeight > 0);
@@ -97,6 +99,8 @@ QComHardwareOverlayRenderer::QComHardwareOverlayRenderer(
         ref = mISurface->createOverlay(decodedWidth, decodedHeight, OVERLAY_FORMAT_YCrCb_420_SP_TILE, ISurface::BufferHeap::ROT_0);
     else if (colorFormat == OMX_COLOR_FormatYUV420SemiPlanar)
         ref = mISurface->createOverlay(decodedWidth, decodedHeight, OVERLAY_FORMAT_YCrCb_420_SP, ISurface::BufferHeap::ROT_0);
+    else if (colorFormat == OMX_QCOM_COLOR_FormatYVU420SemiPlanarInterlace)
+        ref = mISurface->createOverlay(decodedWidth, decodedHeight, OVERLAY_FORMAT_YCrCb_420_SP_INTERLACE, ISurface::BufferHeap::ROT_0);
     else
     {
         LOGE("******unexpected color format %d*******", colorFormat);
