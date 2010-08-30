@@ -21,6 +21,8 @@
 #include <media/stagefright/VideoRenderer.h>
 #include <utils/RefBase.h>
 
+#include <OMX_Component.h>
+
 namespace android {
 
 class ISurface;
@@ -30,6 +32,7 @@ class QComHardwareRenderer : public VideoRenderer {
 public:
     QComHardwareRenderer(
             const sp<ISurface> &surface,
+            OMX_COLOR_FORMATTYPE colorFormat,
             size_t displayWidth, size_t displayHeight,
             size_t decodedWidth, size_t decodedHeight);
 
@@ -40,6 +43,7 @@ public:
 
 private:
     sp<ISurface> mISurface;
+    OMX_COLOR_FORMATTYPE mColorFormat;
     size_t mDisplayWidth, mDisplayHeight;
     size_t mDecodedWidth, mDecodedHeight;
     size_t mFrameSize;
