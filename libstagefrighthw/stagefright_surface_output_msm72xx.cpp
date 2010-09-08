@@ -11,7 +11,8 @@ VideoRenderer *createRenderer(
         const char *componentName,
         OMX_COLOR_FORMATTYPE colorFormat,
         size_t displayWidth, size_t displayHeight,
-        size_t decodedWidth, size_t decodedHeight) {
+        size_t decodedWidth, size_t decodedHeight,
+        size_t rotation, size_t flags) { //rotation unused for now
     using android::QComHardwareRenderer;
 
     static const int OMX_QCOM_COLOR_FormatYVU420SemiPlanar = 0x7FA30C00;
@@ -23,7 +24,7 @@ VideoRenderer *createRenderer(
         return new QComHardwareRenderer(
                 surface, colorFormat,
                 displayWidth, displayHeight,
-                decodedWidth, decodedHeight);
+                decodedWidth, decodedHeight, rotation);
     }
 
     return NULL;

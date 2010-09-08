@@ -69,13 +69,15 @@ QComHardwareOverlayRenderer::QComHardwareOverlayRenderer(
         const sp<ISurface> &surface,
         OMX_COLOR_FORMATTYPE colorFormat,
         size_t displayWidth, size_t displayHeight,
-        size_t decodedWidth, size_t decodedHeight)
+        size_t decodedWidth, size_t decodedHeight,
+        size_t rotation)
     : mISurface(surface),
       mDisplayWidth(displayWidth),
       mDisplayHeight(displayHeight),
       mDecodedWidth(decodedWidth),
       mDecodedHeight(decodedHeight),
       mFrameSize((mDecodedWidth * mDecodedHeight * 3) / 2),
+      mRotation(rotation),
       mStatistics(false),
       mLastFrame(0),
       mFpsSum(0),
@@ -95,12 +97,31 @@ QComHardwareOverlayRenderer::QComHardwareOverlayRenderer(
     if (atoi(value)) mStatistics = true;
     sp<OverlayRef> ref = NULL;
 
+    int32_t transform = ISurface::BufferHeap::ROT_0;
+
+    switch( mRotation ){
+    case 0:
+      break;
+    case 90:
+      transform = ISurface::BufferHeap::ROT_90;
+      break;
+    case 180:
+      transform = ISurface::BufferHeap::ROT_180;
+      break;
+    case 270:
+      transform = ISurface::BufferHeap::ROT_270;
+      break;
+    default:
+      LOGW("Unknown transform, assuming 0");
+      break;
+    }
+
     if (colorFormat == QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka)
-        ref = mISurface->createOverlay(decodedWidth, decodedHeight, OVERLAY_FORMAT_YCrCb_420_SP_TILE, ISurface::BufferHeap::ROT_0);
+      ref = mISurface->createOverlay(decodedWidth, decodedHeight, OVERLAY_FORMAT_YCrCb_420_SP_TILE, transform );
     else if (colorFormat == OMX_COLOR_FormatYUV420SemiPlanar)
-        ref = mISurface->createOverlay(decodedWidth, decodedHeight, OVERLAY_FORMAT_YCrCb_420_SP, ISurface::BufferHeap::ROT_0);
+      ref = mISurface->createOverlay(decodedWidth, decodedHeight, OVERLAY_FORMAT_YCrCb_420_SP, transform );
     else if (colorFormat == OMX_QCOM_COLOR_FormatYVU420SemiPlanarInterlace)
-        ref = mISurface->createOverlay(decodedWidth, decodedHeight, OVERLAY_FORMAT_YCrCb_420_SP_INTERLACE, ISurface::BufferHeap::ROT_0);
+      ref = mISurface->createOverlay(decodedWidth, decodedHeight, OVERLAY_FORMAT_YCrCb_420_SP_INTERLACE, transform );
     else
     {
         LOGE("******unexpected color format %d*******", colorFormat);

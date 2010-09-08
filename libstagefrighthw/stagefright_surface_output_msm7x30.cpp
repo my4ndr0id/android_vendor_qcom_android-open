@@ -30,7 +30,8 @@ VideoRenderer *createRenderer(
         const char *componentName,
         OMX_COLOR_FORMATTYPE colorFormat,
         size_t displayWidth, size_t displayHeight,
-        size_t decodedWidth, size_t decodedHeight) {
+        size_t decodedWidth, size_t decodedHeight,
+        size_t rotation , size_t flags ) {
     using android::QComHardwareOverlayRenderer;
     using android::QComHardwareRenderer;
 
@@ -47,7 +48,7 @@ VideoRenderer *createRenderer(
         return new QComHardwareOverlayRenderer(
                 surface, colorFormat,
                 displayWidth, displayHeight,
-                decodedWidth, decodedHeight);
+                decodedWidth, decodedHeight, rotation);
     }
 #else
     if((colorFormat == OMX_COLOR_FormatYUV420SemiPlanar ||
@@ -57,7 +58,7 @@ VideoRenderer *createRenderer(
         return new QComHardwareOverlayRenderer(
                 surface, colorFormat,
                 displayWidth, displayHeight,
-                decodedWidth, decodedHeight);
+                decodedWidth, decodedHeight, rotation );
     }
     else if (colorFormat == QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka
         && !strncmp(componentName, "OMX.qcom.video.decoder.", 23)) {
@@ -65,7 +66,7 @@ VideoRenderer *createRenderer(
         return new QComHardwareRenderer(
                 surface, colorFormat,
                 displayWidth, displayHeight,
-                decodedWidth, decodedHeight);
+                decodedWidth, decodedHeight, rotation );
     }
 #endif
 
