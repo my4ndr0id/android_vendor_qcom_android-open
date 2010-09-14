@@ -153,7 +153,7 @@ void QComHardwareRenderer::publishBuffers(uint32_t pmem_fd) {
     mMemoryHeap->slap();
 
     PixelFormat HALPixelFormat = HAL_PIXEL_FORMAT_YCrCb_420_SP;
-
+    static const int OMX_QCOM_COLOR_FormatYVU420SemiPlanarInterlace = 0x7FA30C04;
 #ifdef SURF7x30
     static const int QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka = 0x7FA30C03;
 
@@ -161,6 +161,9 @@ void QComHardwareRenderer::publishBuffers(uint32_t pmem_fd) {
         HALPixelFormat = HAL_PIXEL_FORMAT_YCbCr_420_SP_TILED;
     }
 #endif
+    if (mColorFormat == OMX_QCOM_COLOR_FormatYVU420SemiPlanarInterlace) {
+        HALPixelFormat = HAL_PIXEL_FORMAT_YCrCb_420_SP_INTERLACE;
+    }
 
     ISurface::BufferHeap bufferHeap(
             mDisplayWidth, mDisplayHeight,
