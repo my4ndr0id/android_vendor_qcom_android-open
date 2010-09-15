@@ -37,7 +37,8 @@ public:
             const sp<ISurface> &surface,
             OMX_COLOR_FORMATTYPE colorFormat,
             size_t displayWidth, size_t displayHeight,
-            size_t decodedWidth, size_t decodedHeight);
+            size_t decodedWidth, size_t decodedHeight,
+            size_t rotation);
 
     virtual ~QComHardwareOverlayRenderer();
 
@@ -48,6 +49,7 @@ private:
     sp<ISurface> mISurface;
     size_t mDisplayWidth, mDisplayHeight;
     size_t mDecodedWidth, mDecodedHeight;
+    size_t mRotation;
     size_t mFrameSize;
     sp<MemoryHeapPmem> mMemoryHeap;
 

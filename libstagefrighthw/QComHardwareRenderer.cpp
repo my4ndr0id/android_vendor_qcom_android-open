@@ -69,13 +69,15 @@ QComHardwareRenderer::QComHardwareRenderer(
         const sp<ISurface> &surface,
         OMX_COLOR_FORMATTYPE colorFormat,
         size_t displayWidth, size_t displayHeight,
-        size_t decodedWidth, size_t decodedHeight)
+        size_t decodedWidth, size_t decodedHeight,
+        size_t rotation )
     : mISurface(surface),
       mColorFormat(colorFormat),
       mDisplayWidth(displayWidth),
       mDisplayHeight(displayHeight),
       mDecodedWidth(decodedWidth),
       mDecodedHeight(decodedHeight),
+      mRotation( rotation ),
       mFrameSize((mDecodedWidth * mDecodedHeight * 3) / 2),
       mStatistics(false),
       mLastFrame(0),
@@ -165,10 +167,30 @@ void QComHardwareRenderer::publishBuffers(uint32_t pmem_fd) {
         HALPixelFormat = HAL_PIXEL_FORMAT_YCrCb_420_SP_INTERLACE;
     }
 
+    uint32_t transform = ISurface::BufferHeap::ROT_0;
+
+    switch( mRotation ){
+    case 0:
+      break;
+    case 90:
+      transform = ISurface::BufferHeap::ROT_90;
+      break;
+    case 180:
+      transform = ISurface::BufferHeap::ROT_180;
+      break;
+    case 270:
+      transform = ISurface::BufferHeap::ROT_270;
+      break;
+    default:
+      LOGW("Unknown transform, assuming 0");
+      break;
+    }
+
     ISurface::BufferHeap bufferHeap(
             mDisplayWidth, mDisplayHeight,
             mDecodedWidth, mDecodedHeight,
-            HALPixelFormat, mMemoryHeap);
+            HALPixelFormat, transform,
+            0, mMemoryHeap);
 
     status_t err = mISurface->registerBuffers(bufferHeap);
     CHECK_EQ(err, OK);
