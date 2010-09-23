@@ -75,7 +75,10 @@ OSCL_EXPORT_REF bool AndroidSurfaceOutputMsm7x30::initCheck()
     // reset flags in case display format changes in the middle of a stream
     resetVideoParameterFlags();
 
-    if(iVideoSubFormat == PVMF_MIME_YUV420_PACKEDSEMIPLANAR_TILE) {
+    //Use Overlay if target is 8660
+    char value[PROPERTY_VALUE_MAX];
+    property_get("ro.product.device",value,"0");
+    if(iVideoSubFormat == PVMF_MIME_YUV420_PACKEDSEMIPLANAR_TILE && strcmp(value,"msm8660_surf")) {
         mUseOverlay = false;
         initSurface();
     }
@@ -149,20 +152,32 @@ void AndroidSurfaceOutputMsm7x30::initOverlay()
     //LOGE("iVideoSubFormat = %d \n", iVideoSubFormat);
 
     // MSM7x30 hardware codec uses semi-planar format
-    if ((iVideoSubFormat == PVMF_MIME_YUV420_SEMIPLANAR_YVU) || (iVideoSubFormat == PVMF_MIME_YUV420_SEMIPLANAR)) {
+    if ((iVideoSubFormat == PVMF_MIME_YUV420_SEMIPLANAR_YVU) || (iVideoSubFormat == PVMF_MIME_YUV420_SEMIPLANAR) ||(iVideoSubFormat == PVMF_MIME_YUV420_PACKEDSEMIPLANAR_TILE)) {
         LOGV("using hardware codec");
         mHardwareCodec = true;
         mUseOverlay = true;
         /*
+         * When target is 8660 number of buffers to hold 2
          * When HDMI is off or 720p clip, number of buffers to hold 1
          */
-        char value[PROPERTY_VALUE_MAX];
-        property_get("hw.hdmiON", value, "0");
-        if (!atoi(value) || (frameWidth == 1280 && frameHeight == 720))
-             mNumberOfFramesToHold = 1;
-        else
+        char targetValue[PROPERTY_VALUE_MAX];
+        property_get("ro.product.device",targetValue,"0");
+        if(!strcmp("msm8660_surf",targetValue)) {
              mNumberOfFramesToHold = 2;
-        sp<OverlayRef> ref = mSurface->createOverlay(frameWidth, frameHeight, OVERLAY_FORMAT_YCrCb_420_SP, orientation);
+        }
+        else {
+            char value[PROPERTY_VALUE_MAX];
+            property_get("hw.hdmiON", value, "0");
+            if (!atoi(value) || (frameWidth == 1280 && frameHeight == 720))
+                mNumberOfFramesToHold = 1;
+            else
+                mNumberOfFramesToHold = 2;
+        }
+        sp<OverlayRef> ref;
+        if(iVideoSubFormat == PVMF_MIME_YUV420_PACKEDSEMIPLANAR_TILE)
+            ref = mSurface->createOverlay(frameWidth, frameHeight,  OVERLAY_FORMAT_YCrCb_420_SP_TILE, orientation);
+        else
+            ref = mSurface->createOverlay(frameWidth, frameHeight, OVERLAY_FORMAT_YCrCb_420_SP, orientation);
         mOverlay = new Overlay(ref);
         if (mOverlay  == 0){
              mUseOverlay = false;
