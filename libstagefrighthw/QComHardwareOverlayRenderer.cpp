@@ -86,7 +86,7 @@ QComHardwareOverlayRenderer::QComHardwareOverlayRenderer(
       mLastFrameTime(0) {
 
     static const int QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka = 0x7FA30C03;
-    static const int OMX_QCOM_COLOR_FormatYVU420SemiPlanarInterlace = 0x7FA30C04;
+    static const int QOMX_INTERLACE_FLAG = 0x49283654;
 
     CHECK(mISurface.get() != NULL);
     CHECK(mDecodedWidth > 0);
@@ -117,11 +117,13 @@ QComHardwareOverlayRenderer::QComHardwareOverlayRenderer(
     }
 
     if (colorFormat == QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka)
-      ref = mISurface->createOverlay(decodedWidth, decodedHeight, OVERLAY_FORMAT_YCrCb_420_SP_TILE, transform );
+        ref = mISurface->createOverlay(decodedWidth, decodedHeight, HAL_PIXEL_FORMAT_YCbCr_420_SP_TILED, transform );
     else if (colorFormat == OMX_COLOR_FormatYUV420SemiPlanar)
-      ref = mISurface->createOverlay(decodedWidth, decodedHeight, OVERLAY_FORMAT_YCrCb_420_SP, transform );
-    else if (colorFormat == OMX_QCOM_COLOR_FormatYVU420SemiPlanarInterlace)
-      ref = mISurface->createOverlay(decodedWidth, decodedHeight, OVERLAY_FORMAT_YCrCb_420_SP_INTERLACE, transform );
+        ref = mISurface->createOverlay(decodedWidth, decodedHeight, HAL_PIXEL_FORMAT_YCrCb_420_SP, transform );
+    else if (colorFormat == (OMX_COLOR_FormatYUV420SemiPlanar ^ QOMX_INTERLACE_FLAG))
+        ref = mISurface->createOverlay(decodedWidth, decodedHeight, HAL_PIXEL_FORMAT_YCrCb_420_SP ^ HAL_PIXEL_FORMAT_INTERLACE, transform );
+    else if (colorFormat == (QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka ^ QOMX_INTERLACE_FLAG))
+        ref = mISurface->createOverlay(decodedWidth, decodedHeight, HAL_PIXEL_FORMAT_YCbCr_420_SP_TILED ^ HAL_PIXEL_FORMAT_INTERLACE, transform );
     else
     {
         LOGE("******unexpected color format %d*******", colorFormat);
