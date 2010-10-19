@@ -40,57 +40,46 @@ VideoRenderer *createRenderer(
     static const int QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka = 0x7FA30C03;
     static const int QOMX_INTERLACE_FLAG = 0x49283654;
 
-#ifndef SURF7x30
-    if((colorFormat == OMX_COLOR_FormatYUV420SemiPlanar ||
-        colorFormat == QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka ||
-        colorFormat == (OMX_QCOM_COLOR_FormatYVU420SemiPlanar ^ QOMX_INTERLACE_FLAG) ||
-        colorFormat == (QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka ^ QOMX_INTERLACE_FLAG) ||
-        colorFormat == (OMX_COLOR_FormatYUV420SemiPlanar ^ QOMX_INTERLACE_FLAG))
-        && !strncmp(componentName, "OMX.qcom.video.decoder.", 23)) {
-            LOGV("StagefrightSurfaceOutput7x30::createRenderer");
-            QComHardwareOverlayRenderer *videoRenderer =  new QComHardwareOverlayRenderer(
-                surface, colorFormat,
-                displayWidth, displayHeight,
-                decodedWidth, decodedHeight, rotation);
-            bool initSuccess = videoRenderer->InitOverlayRenderer();
-            if (!initSuccess) {
-                LOGE("Create Overlay Renderer failed");
-                delete videoRenderer;
-                return NULL;
+    if (!strncmp(componentName, "OMX.qcom.video.decoder.", 23))
+    {
+        switch ((int)colorFormat)
+        {
+            case OMX_COLOR_FormatYUV420SemiPlanar:
+            case OMX_QCOM_COLOR_FormatYVU420SemiPlanar:
+            case (OMX_QCOM_COLOR_FormatYVU420SemiPlanar ^ QOMX_INTERLACE_FLAG):
+            case (QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka ^ QOMX_INTERLACE_FLAG):
+            case (OMX_COLOR_FormatYUV420SemiPlanar ^ QOMX_INTERLACE_FLAG):
+            {
+                LOGV("StagefrightSurfaceOutput7x30::createRenderer");
+                QComHardwareOverlayRenderer *videoRenderer =  new QComHardwareOverlayRenderer(
+                    surface, colorFormat,
+                    displayWidth, displayHeight,
+                    decodedWidth, decodedHeight, rotation);
+                bool initSuccess = videoRenderer->InitOverlayRenderer();
+                if (!initSuccess)
+                {
+                    LOGE("Create Overlay Renderer failed");
+                    delete videoRenderer;
+                    break;
+                }
+                LOGV("Create Overlay Renderer successful");
+                return static_cast<VideoRenderer *>(videoRenderer);
+                break; //keep compiler quiet
             }
-            LOGV("Create Overlay Renderer successfull");
-            return  static_cast<VideoRenderer *> (videoRenderer);
-    }
-#else
-    if((colorFormat == OMX_COLOR_FormatYUV420SemiPlanar ||
-       colorFormat == (OMX_QCOM_COLOR_FormatYVU420SemiPlanar ^ QOMX_INTERLACE_FLAG) ||
-       colorFormat == (QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka ^ QOMX_INTERLACE_FLAG) ||
-       colorFormat == (OMX_COLOR_FormatYUV420SemiPlanar ^ QOMX_INTERLACE_FLAG))
-        && !strncmp(componentName, "OMX.qcom.video.decoder.", 23)) {
-            LOGV("StagefrightSurfaceOutput7x30::createRenderer QComHardwareOverlayRenderer");
-            QComHardwareOverlayRenderer *videoRenderer = new QComHardwareOverlayRenderer(
-                surface, colorFormat,
-                displayWidth, displayHeight,
-                decodedWidth, decodedHeight, rotation );
-            bool initSucess = videoRenderer->InitOverlayRenderer();
-            if (!initSucess) {
-                LOGE("Create Overlay Renderer failed");
-                delete videoRenderer;
-                return NULL;
+            case QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka:
+            {
+                LOGV("StagefrightSurfaceOutput7x30::createRenderer QComHardwareRenderer");
+                return new QComHardwareRenderer(
+                        surface, colorFormat,
+                        displayWidth, displayHeight,
+                        decodedWidth, decodedHeight, rotation);
+                break; //keep compiler quiet
             }
-            LOGV("Create Overlay Renderer successfull");
-            return static_cast<VideoRenderer *> (videoRenderer);
+            default:
+                //handle this outside the if statement
+                break;
+        }
     }
-    else if (colorFormat == QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka
-        && !strncmp(componentName, "OMX.qcom.video.decoder.", 23)) {
-        LOGV("StagefrightSurfaceOutput7x30::createRenderer QComHardwareRenderer");
-        return new QComHardwareRenderer(
-                surface, colorFormat,
-                displayWidth, displayHeight,
-                decodedWidth, decodedHeight, rotation );
-    }
-#endif
-
     LOGE("error: StagefrightSurfaceOutput7x30::createRenderer returning NULL!");
     return NULL;
 }
