@@ -36,13 +36,16 @@ VideoRenderer *createRenderer(
     using android::QComHardwareRenderer;
 
 
+    static const int OMX_QCOM_COLOR_FormatYVU420SemiPlanar = 0x7FA30C00;
     static const int QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka = 0x7FA30C03;
-    static const int OMX_QCOM_COLOR_FormatYVU420SemiPlanarInterlace = 0x7FA30C04;
+    static const int QOMX_INTERLACE_FLAG = 0x49283654;
 
 #ifndef SURF7x30
     if((colorFormat == OMX_COLOR_FormatYUV420SemiPlanar ||
         colorFormat == QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka ||
-        colorFormat == OMX_QCOM_COLOR_FormatYVU420SemiPlanarInterlace)
+        colorFormat == (OMX_QCOM_COLOR_FormatYVU420SemiPlanar ^ QOMX_INTERLACE_FLAG) ||
+        colorFormat == (QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka ^ QOMX_INTERLACE_FLAG) ||
+        colorFormat == (OMX_COLOR_FormatYUV420SemiPlanar ^ QOMX_INTERLACE_FLAG))
         && !strncmp(componentName, "OMX.qcom.video.decoder.", 23)) {
         LOGV("StagefrightSurfaceOutput7x30::createRenderer");
         return new QComHardwareOverlayRenderer(
@@ -52,7 +55,9 @@ VideoRenderer *createRenderer(
     }
 #else
     if((colorFormat == OMX_COLOR_FormatYUV420SemiPlanar ||
-       colorFormat == OMX_QCOM_COLOR_FormatYVU420SemiPlanarInterlace)
+       colorFormat == (OMX_QCOM_COLOR_FormatYVU420SemiPlanar ^ QOMX_INTERLACE_FLAG) ||
+       colorFormat == (QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka ^ QOMX_INTERLACE_FLAG) ||
+       colorFormat == (OMX_COLOR_FormatYUV420SemiPlanar ^ QOMX_INTERLACE_FLAG))
         && !strncmp(componentName, "OMX.qcom.video.decoder.", 23)) {
         LOGV("StagefrightSurfaceOutput7x30::createRenderer QComHardwareOverlayRenderer");
         return new QComHardwareOverlayRenderer(
