@@ -72,21 +72,19 @@ QComHardwareOverlayRenderer::QComHardwareOverlayRenderer(
         size_t decodedWidth, size_t decodedHeight,
         size_t rotation)
     : mISurface(surface),
+      mColorFormat(colorFormat),
       mDisplayWidth(displayWidth),
       mDisplayHeight(displayHeight),
       mDecodedWidth(decodedWidth),
       mDecodedHeight(decodedHeight),
-      mFrameSize((mDecodedWidth * mDecodedHeight * 3) / 2),
       mRotation(rotation),
+      mFrameSize((mDecodedWidth * mDecodedHeight * 3) / 2),
       mStatistics(false),
       mLastFrame(0),
       mFpsSum(0),
       mFrameNumber(0),
       mNumFpsSamples(0),
       mLastFrameTime(0) {
-
-    static const int QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka = 0x7FA30C03;
-    static const int QOMX_INTERLACE_FLAG = 0x49283654;
 
     CHECK(mISurface.get() != NULL);
     CHECK(mDecodedWidth > 0);
@@ -95,11 +93,17 @@ QComHardwareOverlayRenderer::QComHardwareOverlayRenderer(
     char value[PROPERTY_VALUE_MAX];
     property_get("persist.debug.sf.statistics",value,"0");
     if (atoi(value)) mStatistics = true;
+}
+
+bool QComHardwareOverlayRenderer::InitOverlayRenderer() {
+    static const int QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka = 0x7FA30C03;
+    static const int QOMX_INTERLACE_FLAG = 0x49283654;
+
     sp<OverlayRef> ref = NULL;
 
     int32_t transform = ISurface::BufferHeap::ROT_0;
 
-    switch( mRotation ){
+    switch( mRotation ) {
     case 0:
       break;
     case 90:
@@ -116,28 +120,34 @@ QComHardwareOverlayRenderer::QComHardwareOverlayRenderer(
       break;
     }
 
-    if (colorFormat == QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka)
-        ref = mISurface->createOverlay(decodedWidth, decodedHeight, HAL_PIXEL_FORMAT_YCbCr_420_SP_TILED, transform );
-    else if (colorFormat == OMX_COLOR_FormatYUV420SemiPlanar)
-        ref = mISurface->createOverlay(decodedWidth, decodedHeight, HAL_PIXEL_FORMAT_YCrCb_420_SP, transform );
-    else if (colorFormat == (OMX_COLOR_FormatYUV420SemiPlanar ^ QOMX_INTERLACE_FLAG))
-        ref = mISurface->createOverlay(decodedWidth, decodedHeight, HAL_PIXEL_FORMAT_YCrCb_420_SP ^ HAL_PIXEL_FORMAT_INTERLACE, transform );
-    else if (colorFormat == (QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka ^ QOMX_INTERLACE_FLAG))
-        ref = mISurface->createOverlay(decodedWidth, decodedHeight, HAL_PIXEL_FORMAT_YCbCr_420_SP_TILED ^ HAL_PIXEL_FORMAT_INTERLACE, transform );
-    else
-    {
-        LOGE("******unexpected color format %d*******", colorFormat);
-        return;
+    if (mColorFormat == QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka)
+        ref = mISurface->createOverlay(mDecodedWidth, mDecodedHeight, HAL_PIXEL_FORMAT_YCbCr_420_SP_TILED, transform );
+    else if (mColorFormat == OMX_COLOR_FormatYUV420SemiPlanar)
+        ref = mISurface->createOverlay(mDecodedWidth, mDecodedHeight, HAL_PIXEL_FORMAT_YCrCb_420_SP, transform );
+    else if (mColorFormat == (OMX_COLOR_FormatYUV420SemiPlanar ^ QOMX_INTERLACE_FLAG))
+        ref = mISurface->createOverlay(mDecodedWidth, mDecodedHeight, HAL_PIXEL_FORMAT_YCrCb_420_SP ^ HAL_PIXEL_FORMAT_INTERLACE, transform );
+    else if (mColorFormat == (QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka ^ QOMX_INTERLACE_FLAG))
+        ref = mISurface->createOverlay(mDecodedWidth, mDecodedHeight, HAL_PIXEL_FORMAT_YCbCr_420_SP_TILED ^ HAL_PIXEL_FORMAT_INTERLACE, transform );
+    else {
+        LOGE("******unexpected color format %d*******", mColorFormat);
+        return false;
+    }
+
+    if(ref == NULL) {
+        LOGE("Create Overlay Failed - Overlay ref is  NULL");
+        return false;
     }
 
     mOverlay = new Overlay(ref);
-    if (mOverlay  == 0){
+    if (mOverlay  == 0) {
          LOGE("Create overlay failed\n");
-         return;
-    }else {
+         return false;
+    }
+    else {
          LOGV("Create overlay successful\n");
          mFd = 0;
-         mOverlay->setCrop(0,0,displayWidth,displayHeight);
+         mOverlay->setCrop(0,0,mDisplayWidth,mDisplayHeight);
+         return true;
     }
 }
 
@@ -156,7 +166,6 @@ void QComHardwareOverlayRenderer::render(
         LOGE("couldn't get offset");
         return;
     }
-
     mOverlay->queueBuffer((void *)offset);
 
     //Average FPS Profiling

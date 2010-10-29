@@ -44,9 +44,11 @@ public:
 
     virtual void render(
             const void *data, size_t size, void *platformPrivate);
+    bool InitOverlayRenderer();
 
 private:
     sp<ISurface> mISurface;
+    OMX_COLOR_FORMATTYPE mColorFormat;
     size_t mDisplayWidth, mDisplayHeight;
     size_t mDecodedWidth, mDecodedHeight;
     size_t mRotation;
