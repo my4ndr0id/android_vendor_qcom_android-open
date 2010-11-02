@@ -16,10 +16,10 @@ VideoRenderer *createRenderer(
     using android::QComHardwareRenderer;
 
     static const int OMX_QCOM_COLOR_FormatYVU420SemiPlanar = 0x7FA30C00;
-    static const int OMX_QCOM_COLOR_FormatYVU420SemiPlanarInterlace = 0x7FA30C04;
+    static const int QOMX_INTERLACE_FLAG = 0x49283654;
 
     if ((colorFormat == OMX_QCOM_COLOR_FormatYVU420SemiPlanar ||
-         colorFormat == OMX_QCOM_COLOR_FormatYVU420SemiPlanarInterlace)
+         colorFormat == (OMX_QCOM_COLOR_FormatYVU420SemiPlanar ^ QOMX_INTERLACE_FLAG))
         && !strncmp(componentName, "OMX.qcom.video.decoder.", 23)) {
         return new QComHardwareRenderer(
                 surface, colorFormat,
