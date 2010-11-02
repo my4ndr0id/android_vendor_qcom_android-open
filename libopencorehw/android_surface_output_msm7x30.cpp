@@ -78,7 +78,7 @@ OSCL_EXPORT_REF bool AndroidSurfaceOutputMsm7x30::initCheck()
     //Use Overlay if target is 8660
     char value[PROPERTY_VALUE_MAX];
     property_get("ro.product.device",value,"0");
-    if(iVideoSubFormat == PVMF_MIME_YUV420_PACKEDSEMIPLANAR_TILE && (strcmp(value,"msm8660_surf") || strcmp(value, "msm8660_csfb"))) {
+    if(iVideoSubFormat == PVMF_MIME_YUV420_PACKEDSEMIPLANAR_TILE && strncmp(value,"msm8660",7)) {
         mUseOverlay = false;
         initSurface();
     }
