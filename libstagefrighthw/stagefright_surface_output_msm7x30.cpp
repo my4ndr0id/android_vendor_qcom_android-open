@@ -21,6 +21,7 @@
 #define LOG_TAG "StagefrightSurfaceOutput7630"
 #include <utils/Log.h>
 //#define NDEBUG 0
+#include "omx_drmplay_renderer.h"
 
 using android::sp;
 using android::ISurface;
@@ -85,6 +86,10 @@ VideoRenderer *createRenderer(
                 //handle this outside the if statement
                 break;
         }
+    }  else if(!strncmp(componentName, "drm.play", 8)) {
+              LOGV("StagefrightSurfaceOutput7x30::createRenderer for drm.play display *= %d,%d  decode = %d,%d", displayWidth, displayHeight, decodedWidth, decodedHeight);
+              omx_drm_play_renderer::CreateRenderer(surface, decodedWidth, decodedHeight);
+              return new omx_drm_dummy_renderer();
     }
     LOGE("error: StagefrightSurfaceOutput7x30::createRenderer returning NULL!");
     return NULL;

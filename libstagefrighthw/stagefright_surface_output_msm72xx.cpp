@@ -1,6 +1,7 @@
 #include <media/stagefright/HardwareAPI.h>
 
 #include "QComHardwareRenderer.h"
+#include "omx_drmplay_renderer.h"
 
 using android::sp;
 using android::ISurface;
@@ -25,7 +26,10 @@ VideoRenderer *createRenderer(
                 surface, colorFormat,
                 displayWidth, displayHeight,
                 decodedWidth, decodedHeight, rotation);
+    } else if(!strncmp(componentName, "drm.play", 8)) {
+              LOGV("StagefrightSurfaceOutput7x30::createRenderer for drm.play display *= %d,%d  decode = %d,%d", displayWidth, displayHeight, decodedWidth, decodedHeight);
+              omx_drm_play_renderer::CreateRenderer(surface, decodedWidth, decodedHeight);
+              return new omx_drm_dummy_renderer();
     }
-
     return NULL;
 }
