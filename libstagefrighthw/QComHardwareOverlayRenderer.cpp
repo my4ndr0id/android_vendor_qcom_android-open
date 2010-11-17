@@ -144,10 +144,17 @@ bool QComHardwareOverlayRenderer::InitOverlayRenderer() {
          return false;
     }
     else {
-         LOGV("Create overlay successful\n");
-         mFd = 0;
-         mOverlay->setCrop(0,0,mDisplayWidth,mDisplayHeight);
-         return true;
+         status_t err = mOverlay->getStatus();
+         if(err == OK) {
+             LOGV("Create overlay successful\n");
+             mFd = 0;
+             mOverlay->setCrop(0,0,mDisplayWidth,mDisplayHeight);
+             return true;
+         }
+         else {
+             LOGE("Create overlay failed - status = %d",err);
+             return false;
+         }
     }
 }
 
