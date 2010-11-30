@@ -86,6 +86,10 @@ QComHardwareOverlayRenderer::QComHardwareOverlayRenderer(
       mNumFpsSamples(0),
       mLastFrameTime(0) {
 
+    static const int QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka = 0x7FA30C03;
+    static const int QOMX_INTERLACE_FLAG = 0x49283654;
+    static const int QOMX_3D_VIDEO_FLAG = 0x23784238;
+
     CHECK(mISurface.get() != NULL);
     CHECK(mDecodedWidth > 0);
     CHECK(mDecodedHeight > 0);
@@ -98,6 +102,7 @@ QComHardwareOverlayRenderer::QComHardwareOverlayRenderer(
 bool QComHardwareOverlayRenderer::InitOverlayRenderer() {
     static const int QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka = 0x7FA30C03;
     static const int QOMX_INTERLACE_FLAG = 0x49283654;
+    static const int QOMX_3D_VIDEO_FLAG = 0x23784238;
 
     sp<OverlayRef> ref = NULL;
 
@@ -105,29 +110,37 @@ bool QComHardwareOverlayRenderer::InitOverlayRenderer() {
 
     switch( mRotation ) {
     case 0:
-      break;
+        break;
     case 90:
-      transform = ISurface::BufferHeap::ROT_90;
-      break;
+        transform = ISurface::BufferHeap::ROT_90;
+        break;
     case 180:
-      transform = ISurface::BufferHeap::ROT_180;
+        transform = ISurface::BufferHeap::ROT_180;
       break;
     case 270:
-      transform = ISurface::BufferHeap::ROT_270;
-      break;
+        transform = ISurface::BufferHeap::ROT_270;
+        break;
     default:
-      LOGW("Unknown transform, assuming 0");
-      break;
+        LOGW("Unknown transform, assuming 0");
+        break;
     }
 
-    if (mColorFormat == QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka)
-        ref = mISurface->createOverlay(mDecodedWidth, mDecodedHeight, HAL_PIXEL_FORMAT_YCbCr_420_SP_TILED, transform );
-    else if (mColorFormat == OMX_COLOR_FormatYUV420SemiPlanar)
-        ref = mISurface->createOverlay(mDecodedWidth, mDecodedHeight, HAL_PIXEL_FORMAT_YCrCb_420_SP, transform );
-    else if (mColorFormat == (OMX_COLOR_FormatYUV420SemiPlanar ^ QOMX_INTERLACE_FLAG))
-        ref = mISurface->createOverlay(mDecodedWidth, mDecodedHeight, HAL_PIXEL_FORMAT_YCrCb_420_SP ^ HAL_PIXEL_FORMAT_INTERLACE, transform );
-    else if (mColorFormat == (QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka ^ QOMX_INTERLACE_FLAG))
-        ref = mISurface->createOverlay(mDecodedWidth, mDecodedHeight, HAL_PIXEL_FORMAT_YCbCr_420_SP_TILED ^ HAL_PIXEL_FORMAT_INTERLACE, transform );
+    if (mColorFormat == QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka) {
+        ref = mISurface->createOverlay(mDecodedWidth, mDecodedHeight, HAL_PIXEL_FORMAT_YCbCr_420_SP_TILED, transform, HAL_NO_3D);
+    }
+    else if (mColorFormat == OMX_COLOR_FormatYUV420SemiPlanar) {
+        ref = mISurface->createOverlay(mDecodedWidth, mDecodedHeight, HAL_PIXEL_FORMAT_YCrCb_420_SP, transform, HAL_NO_3D);
+    }
+    else if (mColorFormat == (OMX_COLOR_FormatYUV420SemiPlanar ^ QOMX_INTERLACE_FLAG)) {
+        ref = mISurface->createOverlay(mDecodedWidth, mDecodedHeight, HAL_PIXEL_FORMAT_YCrCb_420_SP ^ HAL_PIXEL_FORMAT_INTERLACE, transform, HAL_NO_3D);
+    }
+    else if (mColorFormat == (QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka ^ QOMX_INTERLACE_FLAG)) {
+        ref = mISurface->createOverlay(mDecodedWidth, mDecodedHeight, HAL_PIXEL_FORMAT_YCbCr_420_SP_TILED ^ HAL_PIXEL_FORMAT_INTERLACE, transform, HAL_NO_3D);
+    }
+    else if (mColorFormat == (QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka ^ QOMX_3D_VIDEO_FLAG)) {
+        ref = mISurface->createOverlay(mDecodedWidth, mDecodedHeight, HAL_PIXEL_FORMAT_YCbCr_420_SP_TILED,
+                                       transform, HAL_3D_IN_LR_SIDE | HAL_3D_OUT_LR_SIDE);
+    }
     else {
         LOGE("******unexpected color format %d*******", mColorFormat);
         return false;

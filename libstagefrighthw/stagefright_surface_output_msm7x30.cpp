@@ -20,6 +20,7 @@
 #include "QComHardwareRenderer.h"
 #define LOG_TAG "StagefrightSurfaceOutput7630"
 #include <utils/Log.h>
+//#define NDEBUG 0
 
 using android::sp;
 using android::ISurface;
@@ -39,6 +40,7 @@ VideoRenderer *createRenderer(
     static const int OMX_QCOM_COLOR_FormatYVU420SemiPlanar = 0x7FA30C00;
     static const int QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka = 0x7FA30C03;
     static const int QOMX_INTERLACE_FLAG = 0x49283654;
+    static const int QOMX_3D_VIDEO_FLAG = 0x23784238;
 
     if (!strncmp(componentName, "OMX.qcom.video.decoder.", 23))
     {
@@ -46,9 +48,12 @@ VideoRenderer *createRenderer(
         {
             case OMX_COLOR_FormatYUV420SemiPlanar:
             case OMX_QCOM_COLOR_FormatYVU420SemiPlanar:
+            /*interlace variants*/
             case (OMX_QCOM_COLOR_FormatYVU420SemiPlanar ^ QOMX_INTERLACE_FLAG):
             case (QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka ^ QOMX_INTERLACE_FLAG):
             case (OMX_COLOR_FormatYUV420SemiPlanar ^ QOMX_INTERLACE_FLAG):
+            /*3d variants*/
+            case (QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka ^ QOMX_3D_VIDEO_FLAG):
             {
                 LOGV("StagefrightSurfaceOutput7x30::createRenderer");
                 QComHardwareOverlayRenderer *videoRenderer =  new QComHardwareOverlayRenderer(
@@ -76,6 +81,7 @@ VideoRenderer *createRenderer(
                 break; //keep compiler quiet
             }
             default:
+                LOGE("ERR: Unsupported color format");
                 //handle this outside the if statement
                 break;
         }
