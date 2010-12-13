@@ -18,6 +18,7 @@
 #include <media/stagefright/HardwareAPI.h>
 #include "QComHardwareOverlayRenderer.h"
 #include "QComHardwareRenderer.h"
+#undef LOG_TAG
 #define LOG_TAG "StagefrightSurfaceOutput7630"
 #include <utils/Log.h>
 //#define NDEBUG 0
