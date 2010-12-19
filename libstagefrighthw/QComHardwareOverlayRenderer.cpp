@@ -28,6 +28,7 @@
 
 #include <cutils/properties.h>
 #include <sys/time.h>
+#include <gralloc_priv.h>
 
 namespace android {
 
@@ -126,20 +127,20 @@ bool QComHardwareOverlayRenderer::InitOverlayRenderer() {
     }
 
     if (mColorFormat == QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka) {
-        ref = mISurface->createOverlay(mDecodedWidth, mDecodedHeight, HAL_PIXEL_FORMAT_YCbCr_420_SP_TILED, transform, HAL_NO_3D);
+        ref = mISurface->createOverlay(mDecodedWidth, mDecodedHeight, HAL_PIXEL_FORMAT_YCbCr_420_SP_TILED, transform);
     }
     else if (mColorFormat == OMX_COLOR_FormatYUV420SemiPlanar) {
-        ref = mISurface->createOverlay(mDecodedWidth, mDecodedHeight, HAL_PIXEL_FORMAT_YCrCb_420_SP, transform, HAL_NO_3D);
+        ref = mISurface->createOverlay(mDecodedWidth, mDecodedHeight, HAL_PIXEL_FORMAT_YCrCb_420_SP, transform);
     }
     else if (mColorFormat == (OMX_COLOR_FormatYUV420SemiPlanar ^ QOMX_INTERLACE_FLAG)) {
-        ref = mISurface->createOverlay(mDecodedWidth, mDecodedHeight, HAL_PIXEL_FORMAT_YCrCb_420_SP ^ HAL_PIXEL_FORMAT_INTERLACE, transform, HAL_NO_3D);
+        ref = mISurface->createOverlay(mDecodedWidth, mDecodedHeight, HAL_PIXEL_FORMAT_YCrCb_420_SP ^ HAL_PIXEL_FORMAT_INTERLACE, transform);
     }
     else if (mColorFormat == (QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka ^ QOMX_INTERLACE_FLAG)) {
-        ref = mISurface->createOverlay(mDecodedWidth, mDecodedHeight, HAL_PIXEL_FORMAT_YCbCr_420_SP_TILED ^ HAL_PIXEL_FORMAT_INTERLACE, transform, HAL_NO_3D);
+        ref = mISurface->createOverlay(mDecodedWidth, mDecodedHeight, HAL_PIXEL_FORMAT_YCbCr_420_SP_TILED ^ HAL_PIXEL_FORMAT_INTERLACE, transform);
     }
     else if (mColorFormat == (QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka ^ QOMX_3D_VIDEO_FLAG)) {
         ref = mISurface->createOverlay(mDecodedWidth, mDecodedHeight, HAL_PIXEL_FORMAT_YCbCr_420_SP_TILED,
-                                       transform, HAL_3D_IN_LR_SIDE | HAL_3D_OUT_LR_SIDE);
+                                       transform);
     }
     else {
         LOGE("******unexpected color format %d*******", mColorFormat);
@@ -235,7 +236,7 @@ void QComHardwareOverlayRenderer::publishBuffers(uint32_t pmem_fd) {
     master.clear();
     mFd = mMemoryHeap->heapID();
     LOGV("Calling setFd \n");
-    status_t err =  mOverlay->setFd(mFd);
+    status_t err =  0; //mOverlay->setFd(mFd);
     CHECK_EQ(err, OK);
 }
 

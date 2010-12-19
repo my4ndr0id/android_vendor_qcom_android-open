@@ -28,6 +28,7 @@
 #undef LOG_TAG
 #define LOG_TAG "QComHardwareRenderer"
 #include <utils/Log.h>
+#include <gralloc_priv.h>
 
 namespace android {
 

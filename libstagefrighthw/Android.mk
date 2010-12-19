@@ -27,6 +27,8 @@ endif
 LOCAL_C_INCLUDES:= \
         $(TOP)/external/opencore/extern_libs_v2/khronos/openmax/include
 
+LOCAL_C_INCLUDES += hardware/msm7k/libgralloc-qsd8k
+
 LOCAL_SHARED_LIBRARIES :=       \
         libbinder               \
         libutils                \
