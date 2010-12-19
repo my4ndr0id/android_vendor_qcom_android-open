@@ -1,3 +1,5 @@
+ifneq ($(BUILD_WITHOUT_PV), true)
+
 LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 
@@ -34,3 +36,4 @@ LOCAL_MODULE := libopencorehw
 LOCAL_LDLIBS += 
 
 include $(BUILD_SHARED_LIBRARY)
+endif
