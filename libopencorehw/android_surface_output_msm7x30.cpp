@@ -32,6 +32,8 @@
 #include <linux/android_pmem.h>
 #endif
 
+#include <gralloc_priv.h>
+
 using namespace android;
 
 static const char* pmem_adsp = "/dev/pmem_adsp";
@@ -175,9 +177,9 @@ void AndroidSurfaceOutputMsm7x30::initOverlay()
         }
         sp<OverlayRef> ref;
         if(iVideoSubFormat == PVMF_MIME_YUV420_PACKEDSEMIPLANAR_TILE)
-            ref = mSurface->createOverlay(frameWidth, frameHeight,  OVERLAY_FORMAT_YCrCb_420_SP_TILE, orientation);
+            ref = mSurface->createOverlay(frameWidth, frameHeight,  HAL_PIXEL_FORMAT_YCbCr_420_SP_TILED, orientation);
         else
-            ref = mSurface->createOverlay(frameWidth, frameHeight, OVERLAY_FORMAT_YCrCb_420_SP, orientation);
+            ref = mSurface->createOverlay(frameWidth, frameHeight, HAL_PIXEL_FORMAT_YCrCb_420_SP, orientation);
         mOverlay = new Overlay(ref);
         if (mOverlay  == 0){
              mUseOverlay = false;
@@ -217,7 +219,7 @@ void AndroidSurfaceOutputMsm7x30::initOverlay()
             mFrameBuffers[i] = i * frameSize;
         }
         mUseOverlay = true;
-        sp<OverlayRef> ref = mSurface->createOverlay(frameWidth, frameHeight, OVERLAY_FORMAT_YCbCr_420_SP, orientation);
+        sp<OverlayRef> ref = mSurface->createOverlay(frameWidth, frameHeight, HAL_PIXEL_FORMAT_YCbCr_420_SP, orientation);
         mOverlay = new Overlay(ref);
         if (mOverlay  == 0){
              mUseOverlay = false;
