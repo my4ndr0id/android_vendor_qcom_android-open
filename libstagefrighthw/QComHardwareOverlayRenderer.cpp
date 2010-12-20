@@ -236,7 +236,7 @@ void QComHardwareOverlayRenderer::publishBuffers(uint32_t pmem_fd) {
     master.clear();
     mFd = mMemoryHeap->heapID();
     LOGV("Calling setFd \n");
-    status_t err =  0; //mOverlay->setFd(mFd);
+    status_t err = mOverlay->setFd(mFd);
     CHECK_EQ(err, OK);
 }
 
