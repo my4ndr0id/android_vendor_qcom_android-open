@@ -18,6 +18,8 @@ endif
 
 LOCAL_CFLAGS := $(PV_CFLAGS_MINUS_VISIBILITY)
 
+LOCAL_C_INCLUDES += hardware/msm7k/libgralloc-qsd8k
+
 LOCAL_SHARED_LIBRARIES := \
     libutils \
     libbinder \

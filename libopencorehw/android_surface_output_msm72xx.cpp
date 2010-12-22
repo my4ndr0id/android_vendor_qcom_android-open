@@ -31,6 +31,8 @@
 #include <linux/android_pmem.h>
 #endif
 
+#include <gralloc_priv.h>
+
 using namespace android;
 
 static const char* pmem_adsp = "/dev/pmem_adsp";
@@ -166,7 +168,7 @@ PVMFStatus AndroidSurfaceOutputMsm72xx::writeFrameBuf(uint8* aData, uint32 aData
                 // register frame buffers with SurfaceFlinger
                 LOGV("creating buffers for PVMF_MIME_YUV420_SEMIPLANAR_YVU_INTERLACE");
                 mBufferHeap = ISurface::BufferHeap(iVideoDisplayWidth, iVideoDisplayHeight,
-                        iVideoWidth, iVideoHeight, HAL_PIXEL_FORMAT_YCrCb_420_SP_INTERLACE, heap);
+                        iVideoWidth, iVideoHeight, HAL_PIXEL_FORMAT_YCrCb_420_SP ^ HAL_PIXEL_FORMAT_INTERLACE, heap);
             }
 
             master.clear();
