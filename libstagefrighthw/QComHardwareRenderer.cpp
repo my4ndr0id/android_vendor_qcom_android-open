@@ -188,7 +188,9 @@ void QComHardwareRenderer::publishBuffers(uint32_t pmem_fd) {
             0, mMemoryHeap);
 
     status_t err = mISurface->registerBuffers(bufferHeap);
-    CHECK_EQ(err, OK);
+    if(err != OK) {
+        LOGW("registerBuffers failed = %d",err);
+    }
 }
 
 void QComHardwareRenderer::AverageFPSPrint() {
