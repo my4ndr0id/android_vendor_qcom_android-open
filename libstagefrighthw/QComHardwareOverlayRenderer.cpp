@@ -139,7 +139,8 @@ bool QComHardwareOverlayRenderer::InitOverlayRenderer() {
         ref = mISurface->createOverlay(mDecodedWidth, mDecodedHeight, HAL_PIXEL_FORMAT_YCbCr_420_SP_TILED ^ HAL_PIXEL_FORMAT_INTERLACE, transform);
     }
     else if (mColorFormat == (QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka ^ QOMX_3D_VIDEO_FLAG)) {
-        ref = mISurface->createOverlay(mDecodedWidth, mDecodedHeight, HAL_PIXEL_FORMAT_YCbCr_420_SP_TILED,
+        ref = mISurface->createOverlay(mDecodedWidth, mDecodedHeight, 
+                                       HAL_PIXEL_FORMAT_YCbCr_420_SP_TILED | HAL_3D_OUT_LR_SIDE | HAL_3D_IN_LR_SIDE,
                                        transform);
     }
     else {
