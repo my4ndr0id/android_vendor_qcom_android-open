@@ -164,7 +164,7 @@ void AndroidSurfaceOutputMsm7x30::initOverlay()
          */
         char targetValue[PROPERTY_VALUE_MAX];
         property_get("ro.product.device",targetValue,"0");
-        if((!strcmp("msm8660_surf",targetValue)) || (!strcmp("msm8660_csfb", targetValue))) {
+        if(!strncmp(targetValue,"msm8660",7)) {
              mNumberOfFramesToHold = 2;
         }
         else {
