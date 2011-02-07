@@ -1,7 +1,7 @@
 LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 
-ifneq (, $(filter msm7201a_ffa msm7201a_surf msm7627_ffa msm7627_surf msm7627_7x_ffa msm7627_7x_surf qsd8250_ffa qsd8250_surf qsd8650a_st1x, $(QCOM_TARGET_PRODUCT)))
+ifneq (, $(filter msm7201a_ffa msm7201a_surf msm7627_ffa msm7627_surf qsd8250_ffa qsd8250_surf qsd8650a_st1x, $(QCOM_TARGET_PRODUCT)))
 LOCAL_SRC_FILES := \
     stagefright_surface_output_msm72xx.cpp \
     QComHardwareRenderer.cpp \
