@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2009 The Android Open Source Project
- * Copyright (c) 2010, Code Aurora Forum. All rights reserved.
+ * Copyright (c) 2010-2011, Code Aurora Forum. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,11 @@
 #include <cutils/properties.h>
 #include <sys/time.h>
 #include <gralloc_priv.h>
+
+#ifdef OUTPUT_YUV_LOGGING
+FILE *outputYuvFile;
+char outputYuvFilename [] = "/data/YUVoutput.yuv";
+#endif
 
 namespace android {
 
@@ -98,6 +103,13 @@ QComHardwareOverlayRenderer::QComHardwareOverlayRenderer(
     char value[PROPERTY_VALUE_MAX];
     property_get("persist.debug.sf.statistics",value,"0");
     if (atoi(value)) mStatistics = true;
+
+#ifdef OUTPUT_YUV_LOGGING
+    outputYuvFile = fopen (outputYuvFilename, "ab");
+    if(!outputYuvFile) {
+        LOGE("YUV Output file open failed in Overlay Renderer");
+    }
+#endif
 }
 
 bool QComHardwareOverlayRenderer::InitOverlayRenderer() {
@@ -180,6 +192,13 @@ QComHardwareOverlayRenderer::~QComHardwareOverlayRenderer() {
     if(mOverlay != NULL)
         mOverlay->destroy();
     mMemoryHeap.clear();
+
+#ifdef OUTPUT_YUV_LOGGING
+    if(outputYuvFile) {
+        fclose (outputYuvFile);
+        outputYuvFile = NULL;
+    }
+#endif
 }
 
 void QComHardwareOverlayRenderer::render(
@@ -189,6 +208,17 @@ void QComHardwareOverlayRenderer::render(
         LOGE("couldn't get offset");
         return;
     }
+
+#ifdef OUTPUT_YUV_LOGGING
+    if(outputYuvFile) {
+        fwrite (data, 1, size, outputYuvFile);
+        //Comment the fwrite above and uncomment the below
+        //lines to log YUV from FD and offset
+        //void  * testd = mMemoryHeap->getBase() + offset ;
+        //fwrite ((const void *)testd, 1, size, outputYuvFile);
+    }
+#endif
+
     mOverlay->queueBuffer((void *)offset);
 
     //Average FPS Profiling

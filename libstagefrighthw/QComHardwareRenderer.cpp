@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2009 The Android Open Source Project
+ * Copyright (c) 2010-2011, Code Aurora Forum. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +30,11 @@
 #define LOG_TAG "QComHardwareRenderer"
 #include <utils/Log.h>
 #include <gralloc_priv.h>
+
+#ifdef OUTPUT_YUV_LOGGING
+FILE *outputSfYuvFile;
+char outputSfYuvFilename [] = "/data/SfYUVoutput.yuv";
+#endif
 
 namespace android {
 
@@ -93,10 +99,25 @@ QComHardwareRenderer::QComHardwareRenderer(
     char value[PROPERTY_VALUE_MAX];
     property_get("persist.debug.sf.statistics",value,"0");
     if (atoi(value)) mStatistics = true;
+
+#ifdef OUTPUT_YUV_LOGGING
+    outputSfYuvFile = fopen (outputSfYuvFilename, "ab");
+    if(!outputSfYuvFile) {
+        LOGE("Output YUV file open failed");
+    }
+#endif
+
 }
 
 QComHardwareRenderer::~QComHardwareRenderer() {
     if (mStatistics) AverageFPSPrint();
+
+#ifdef OUTPUT_YUV_LOGGING
+    if(outputSfYuvFile) {
+        fclose (outputSfYuvFile);
+        outputSfYuvFile = NULL;
+    }
+#endif
 
     mISurface->unregisterBuffers();
 }
@@ -108,6 +129,16 @@ void QComHardwareRenderer::render(
         LOGE("couldn't get offset");
         return;
     }
+
+#ifdef OUTPUT_YUV_LOGGING
+    if(outputSfYuvFile) {
+        fwrite (data, 1, size, outputSfYuvFile);
+        //Comment the fwrite above and uncomment the below
+        //lines to log YUV from FD and offset
+        //void  * testd = mMemoryHeap->getBase() + offset ;
+        //fwrite ((const void *)testd, 1, size, outputSfYuvFile);
+    }
+#endif
 
     mISurface->postBuffer(offset);
 
