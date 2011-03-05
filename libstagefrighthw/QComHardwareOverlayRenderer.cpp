@@ -156,10 +156,23 @@ bool QComHardwareOverlayRenderer::InitOverlayRenderer() {
     { //Deal with 3D flags
         int format3D;
         GET_3D_FORMAT(mColorFormat, format3D);
-        if (format3D == QOMX_3D_TOP_BOTTOM_VIDEO_FLAG)
-            halPixelFormat |= HAL_3D_OUT_TOP_BOTTOM | HAL_3D_IN_TOP_BOTTOM;
-        else if (format3D == QOMX_3D_LEFT_RIGHT_VIDEO_FLAG)
-            halPixelFormat |= HAL_3D_OUT_SIDE_BY_SIDE | HAL_3D_IN_SIDE_BY_SIDE_HALF_L_R;
+        switch (format3D)
+        {
+            case QOMX_3D_TOP_BOTTOM_VIDEO_FLAG:
+                halPixelFormat |= HAL_3D_OUT_TOP_BOTTOM | HAL_3D_IN_TOP_BOTTOM;
+                break;
+            case QOMX_3D_LEFT_RIGHT_VIDEO_FLAG:
+                halPixelFormat |= HAL_3D_OUT_SIDE_BY_SIDE | HAL_3D_IN_SIDE_BY_SIDE_HALF_L_R;
+                break;
+            case QOMX_3D_RIGHT_LEFT_VIDEO_FLAG:
+                halPixelFormat |= HAL_3D_OUT_SIDE_BY_SIDE | HAL_3D_IN_SIDE_BY_SIDE_HALF_R_L;
+                break;
+            case QOMX_3D_BOTTOM_TOP_VIDEO_FLAG:
+                LOGE("top bottom is not supported!");
+                return false;
+            default:
+                break; //nothing to do, not a 3D video
+        }
 
     }
 
