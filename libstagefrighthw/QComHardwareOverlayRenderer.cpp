@@ -25,6 +25,7 @@
 #include <media/stagefright/MediaDebug.h>
 #include <surfaceflinger/ISurface.h>
 #include <media/stagefright/HardwareAPI.h> //needed for OMX_COLOR_FORMATTYPE
+#include <media/stagefright/Utils.h>
 
 #include <cutils/properties.h>
 #include <sys/time.h>
@@ -37,10 +38,6 @@ char outputYuvFilename [] = "/data/YUVoutput.yuv";
 
 namespace android {
 
-static const int QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka = 0x7FA30C03;
-static const int QOMX_INTERLACE_FLAG = 0x49283654;
-static const int QOMX_3D_LEFT_RIGHT_VIDEO_FLAG = 0x23784238;
-static const int QOMX_3D_TOP_BOTTOM_VIDEO_FLAG = 0x4678239b;
 ////////////////////////////////////////////////////////////////////////////////
 
 typedef struct PLATFORM_PRIVATE_ENTRY
@@ -134,32 +131,39 @@ bool QComHardwareOverlayRenderer::InitOverlayRenderer() {
         break;
     }
 
-    if (mColorFormat == QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka) {
-        ref = mISurface->createOverlay(mDecodedWidth, mDecodedHeight, HAL_PIXEL_FORMAT_YCbCr_420_SP_TILED, transform);
+    int halPixelFormat = 0;
+    int baseColorFormat, temp1, temp2;
+    GET_BASE_COLOR_FORMAT(mColorFormat, baseColorFormat, temp1, temp2);
+    switch (baseColorFormat)
+    {
+        case OMX_COLOR_FormatYUV420SemiPlanar:
+            halPixelFormat = HAL_PIXEL_FORMAT_YCrCb_420_SP;
+            break;
+        case QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka:
+            halPixelFormat = HAL_PIXEL_FORMAT_YCbCr_420_SP_TILED;
+            break;
+        default:
+            LOGE("******unexpected color format %x*******", mColorFormat);
+            return false;
     }
-    else if (mColorFormat == OMX_COLOR_FormatYUV420SemiPlanar) {
-        ref = mISurface->createOverlay(mDecodedWidth, mDecodedHeight, HAL_PIXEL_FORMAT_YCrCb_420_SP, transform);
+
+    { //Deal with interlace flag
+        int interlaceFormat;
+        GET_INTERLACE_FORMAT(mColorFormat, interlaceFormat);
+        halPixelFormat ^= (interlaceFormat ? HAL_PIXEL_FORMAT_INTERLACE : 0);
     }
-    else if (mColorFormat == (OMX_COLOR_FormatYUV420SemiPlanar ^ QOMX_INTERLACE_FLAG)) {
-        ref = mISurface->createOverlay(mDecodedWidth, mDecodedHeight, HAL_PIXEL_FORMAT_YCrCb_420_SP ^ HAL_PIXEL_FORMAT_INTERLACE, transform);
+
+    { //Deal with 3D flags
+        int format3D;
+        GET_3D_FORMAT(mColorFormat, format3D);
+        if (format3D == QOMX_3D_TOP_BOTTOM_VIDEO_FLAG)
+            halPixelFormat |= HAL_3D_OUT_TOP_BOTTOM | HAL_3D_IN_TOP_BOTTOM;
+        else if (format3D == QOMX_3D_LEFT_RIGHT_VIDEO_FLAG)
+            halPixelFormat |= HAL_3D_OUT_SIDE_BY_SIDE | HAL_3D_IN_SIDE_BY_SIDE_HALF_L_R;
+
     }
-    else if (mColorFormat == (QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka ^ QOMX_INTERLACE_FLAG)) {
-        ref = mISurface->createOverlay(mDecodedWidth, mDecodedHeight, HAL_PIXEL_FORMAT_YCbCr_420_SP_TILED ^ HAL_PIXEL_FORMAT_INTERLACE, transform);
-    }
-    else if (mColorFormat == (QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka ^ QOMX_3D_LEFT_RIGHT_VIDEO_FLAG)) {
-        ref = mISurface->createOverlay(mDecodedWidth, mDecodedHeight, 
-                                       HAL_PIXEL_FORMAT_YCbCr_420_SP_TILED | HAL_3D_OUT_SIDE_BY_SIDE | HAL_3D_IN_SIDE_BY_SIDE_HALF_L_R,
-                                       transform);
-    }
-    else if (mColorFormat == (QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka ^ QOMX_3D_TOP_BOTTOM_VIDEO_FLAG)) {
-        ref = mISurface->createOverlay(mDecodedWidth, mDecodedHeight,
-                                       HAL_PIXEL_FORMAT_YCbCr_420_SP_TILED | HAL_3D_OUT_TOP_BOTTOM | HAL_3D_IN_TOP_BOTTOM,
-                                       transform);
-    }
-    else {
-        LOGE("******unexpected color format %d*******", mColorFormat);
-        return false;
-    }
+
+    ref = mISurface->createOverlay(mDecodedWidth, mDecodedHeight, halPixelFormat, transform);
 
     if(ref == NULL) {
         LOGE("Create Overlay Failed - Overlay ref is  NULL");
