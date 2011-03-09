@@ -162,10 +162,10 @@ bool QComHardwareOverlayRenderer::InitOverlayRenderer() {
                 halPixelFormat |= HAL_3D_OUT_TOP_BOTTOM | HAL_3D_IN_TOP_BOTTOM;
                 break;
             case QOMX_3D_LEFT_RIGHT_VIDEO_FLAG:
-                halPixelFormat |= HAL_3D_OUT_SIDE_BY_SIDE | HAL_3D_IN_SIDE_BY_SIDE_HALF_L_R;
+                halPixelFormat |= HAL_3D_OUT_SIDE_BY_SIDE | HAL_3D_IN_SIDE_BY_SIDE_L_R;
                 break;
             case QOMX_3D_RIGHT_LEFT_VIDEO_FLAG:
-                halPixelFormat |= HAL_3D_OUT_SIDE_BY_SIDE | HAL_3D_IN_SIDE_BY_SIDE_HALF_R_L;
+                halPixelFormat |= HAL_3D_OUT_SIDE_BY_SIDE | HAL_3D_IN_SIDE_BY_SIDE_R_L;
                 break;
             case QOMX_3D_BOTTOM_TOP_VIDEO_FLAG:
                 LOGE("top bottom is not supported!");
@@ -173,7 +173,6 @@ bool QComHardwareOverlayRenderer::InitOverlayRenderer() {
             default:
                 break; //nothing to do, not a 3D video
         }
-
     }
 
     ref = mISurface->createOverlay(mDecodedWidth, mDecodedHeight, halPixelFormat, transform);
