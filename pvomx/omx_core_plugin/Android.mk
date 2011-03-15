@@ -5,6 +5,8 @@ LOCAL_SRC_FILES := src/pv_omx_interface.cpp
 
 LOCAL_MODULE := libqcomm_omx
 
+LOCAL_MODULE_TAGS := optional
+
 PV_TOP := external/opencore
 
 PV_COPY_HEADERS_TO := libpv
