@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-ifeq ($(TARGET_BOARD_PLATFORM),msm7k)
+ifeq ($(call is-board-platform-in-list,$(MSM7K_BOARD_PLATFORMS)),true)
   include $(all-subdir-makefiles)
 else ifeq ($(TARGET_BOARD_PLATFORM),qsd8k)
   include $(all-subdir-makefiles)
