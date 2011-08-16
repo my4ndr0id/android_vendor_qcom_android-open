@@ -3,7 +3,7 @@ LOCAL_PATH := $(my-dir)
 ########################
 include $(CLEAR_VARS)
 
-ifeq "$(findstring msm8660,$(QCOM_TARGET_PRODUCT))" "msm8660"
+ifeq ($(call is-board-platform,msm8660),true)
 
 LOCAL_MODULE := media_profiles.xml
 
