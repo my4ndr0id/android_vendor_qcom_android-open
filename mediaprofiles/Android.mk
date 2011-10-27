@@ -7,7 +7,7 @@ ifeq ($(call is-board-platform,msm8660),true)
 
 LOCAL_MODULE := media_profiles.xml
 
-LOCAL_MODULE_TAGS := user
+LOCAL_MODULE_TAGS := optional
 
 # This will install the file in /system/etc
 #
