@@ -81,8 +81,6 @@ OSCL_EXPORT_REF bool AndroidSurfaceOutputMsm7x30::initCheck()
     // reset flags in case display format changes in the middle of a stream
     resetVideoParameterFlags();
 
-    char value[PROPERTY_VALUE_MAX];
-    property_get("ro.product.device",value,"0");
     if(iVideoSubFormat == PVMF_MIME_YUV420_PACKEDSEMIPLANAR_TILE) {
         mUseOverlay = false;
         initSurface();
@@ -171,7 +169,7 @@ void AndroidSurfaceOutputMsm7x30::initOverlay()
          * When HDMI is off or 720p clip, number of buffers to hold 1
          */
         char targetValue[PROPERTY_VALUE_MAX];
-        property_get("ro.product.device",targetValue,"0");
+        property_get("ro.board.platform",targetValue,"0");
         if(!strncmp(targetValue,"msm8660",7)) {
              mNumberOfFramesToHold = 2;
         }
