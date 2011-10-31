@@ -8,7 +8,7 @@ include external/opencore/Config.mk
 LOCAL_C_INCLUDES := $(PV_INCLUDES)\
                     hardware/msm7k/libgralloc-qsd8k
 
-ifeq ($(call is-board-platform-in-list,msm7627a msm7627_surf),true)
+ifeq ($(call is-board-platform-in-list,msm7627a msm7627_surf msm7627_6x),true)
   LOCAL_SRC_FILES := android_surface_output_msm72xx.cpp
 endif
 ifeq ($(call is-board-platform-in-list,msm7630_surf msm7630_fusion msm8660),true)
