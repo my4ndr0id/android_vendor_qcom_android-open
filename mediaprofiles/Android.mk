@@ -22,7 +22,7 @@ ifeq "$(findstring msm7627a,$(QCOM_TARGET_PRODUCT))" "msm7627a"
 
 LOCAL_MODULE := media_profiles.xml
 
-LOCAL_MODULE_TAGS := user
+LOCAL_MODULE_TAGS := optional
 
 # This will install the file in /system/etc
 #
