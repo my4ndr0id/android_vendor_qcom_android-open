@@ -33,7 +33,7 @@ LOCAL_SRC_FILES := $(LOCAL_MODULE)
 include $(BUILD_PREBUILT)
 endif
 
-ifeq "$(findstring msm7627a,$(QCOM_TARGET_PRODUCT))" "msm7627a"
+ifeq ($(call is-board-platform,msm7627a),true)
 
 LOCAL_MODULE := media_profiles.xml
 
