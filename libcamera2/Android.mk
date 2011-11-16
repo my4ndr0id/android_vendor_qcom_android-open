@@ -1,4 +1,3 @@
-ifneq ($(call is-android-codename,ICECREAM_SANDWICH),true)
 ifneq ($(USE_CAMERA_STUB),true)
 ifeq ($(strip $(BOARD_USES_QCOM_HARDWARE)), true)
 BUILD_LIBCAMERA:=true
@@ -35,7 +34,7 @@ LOCAL_HAL_FILES := QCameraHAL.cpp QCameraHWI_Parm.cpp\
                    QCameraHWI.cpp QCameraHWI_Preview.cpp \
                    QCameraHWI_Record.cpp QCameraHWI_Still.cpp \
                    QCameraHWI_Mem.cpp QCameraHWI_Display.cpp \
-                   QCameraStream.cpp
+                   QCameraStream.cpp QualcommCamera.cpp
 else
 LOCAL_HAL_FILES := QualcommCameraHardware.cpp
 MM_CAM_FILES:=
@@ -82,7 +81,8 @@ else
 LOCAL_SHARED_LIBRARIES+= libdl
 endif
 
-LOCAL_MODULE:= libcamera
+LOCAL_MODULE_PATH := $(TARGET_OUT_SHARED_LIBRARIES)/hw
+LOCAL_MODULE:= camera.$(TARGET_BOARD_PLATFORM)
 LOCAL_MODULE_TAGS := optional
 include $(BUILD_SHARED_LIBRARY)
 
@@ -90,4 +90,3 @@ endif # BUILD_TINY_ANDROID
 endif # BUILD_LIBCAMERA
 endif # BOARD_USES_QCOM_HARDWARE
 endif # USE_CAMERA_STUB
-endif # ICECREAM_SANDWICH
