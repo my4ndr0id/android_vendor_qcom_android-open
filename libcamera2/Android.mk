@@ -1,3 +1,5 @@
+# Use this HAL only for 8960, other targets moved to hardware/qcom/camera
+ifeq ($(call is-board-platform,msm8960),true)
 ifneq ($(USE_CAMERA_STUB),true)
 ifeq ($(strip $(BOARD_USES_QCOM_HARDWARE)), true)
 BUILD_LIBCAMERA:=true
@@ -90,3 +92,4 @@ endif # BUILD_TINY_ANDROID
 endif # BUILD_LIBCAMERA
 endif # BOARD_USES_QCOM_HARDWARE
 endif # USE_CAMERA_STUB
+endif # for 8960
