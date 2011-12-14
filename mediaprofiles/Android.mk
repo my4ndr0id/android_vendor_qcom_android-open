@@ -1,4 +1,4 @@
-ifeq ($(call is-board-platform-in-list,msm8960 msm8660 msm7627a),true)
+ifeq ($(call is-board-platform-in-list,msm8960 msm8660 msm7627a msm7630_surf msm7630_fusion),true)
 
 LOCAL_PATH := $(my-dir)
 
@@ -7,7 +7,7 @@ include $(CLEAR_VARS)
 
 ifeq ($(call is-board-platform,msm7627a),true)
 LOCAL_SRC_FILES := media_profiles_7627a.xml
-else ifeq ($(call is-board-platform-in-list,msm8960 msm8660),true)
+else ifeq ($(call is-board-platform-in-list,msm8960 msm8660 msm7630_surf msm7630_fusion),true)
 LOCAL_SRC_FILES := media_profiles.xml
 endif
 
