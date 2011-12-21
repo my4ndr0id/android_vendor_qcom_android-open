@@ -539,7 +539,7 @@
 
   <VideoEncoderCap name="h263" enabled="true"
       minBitRate="64000" maxBitRate="8000000"
-      minFrameWidth="176" maxFrameWidth="800"
+      minFrameWidth="176" maxFrameWidth="864"
       minFrameHeight="144" maxFrameHeight="480"
       minFrameRate="1" maxFrameRate="30" />
 
