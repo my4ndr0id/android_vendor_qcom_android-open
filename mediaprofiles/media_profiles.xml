@@ -77,6 +77,7 @@
   <!ATTLIST VideoEditorCap maxInputFrameHeight CDATA #REQUIRED>
   <!ATTLIST VideoEditorCap maxOutputFrameWidth CDATA #REQUIRED>
   <!ATTLIST VideoEditorCap maxOutputFrameHeight CDATA #REQUIRED>
+  <!ATTLIST VideoEditorCap maxPrefetchYUVFrames CDATA #REQUIRED>
   <!ELEMENT ExportVideoProfile EMPTY>
   <!ATTLIST ExportVideoProfile name (h263|h264|m4v) #REQUIRED>
   <!ATTLIST ExportVideoProfile profile CDATA #REQUIRED>
@@ -567,7 +568,7 @@
   <VideoDecoderCap name="wmv" enabled="true"/>
   <AudioDecoderCap name="wma" enabled="true"/>
 
-  <VideoEditorCap maxInputFrameWidth="1280" maxInputFrameHeight="720" maxOutputFrameWidth="1280" maxOutputFrameHeight="720"/>
+  <VideoEditorCap maxInputFrameWidth="1280" maxInputFrameHeight="720" maxOutputFrameWidth="1280" maxOutputFrameHeight="720" maxPrefetchYUVFrames="3" />
 
   <ExportVideoProfile name="h263" profile="1" level="1"/>
   <ExportVideoProfile name="h264" profile="1" level="1"/>
