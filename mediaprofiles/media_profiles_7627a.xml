@@ -109,7 +109,7 @@
     <EncoderProfile quality="high" fileFormat="3gp" duration="30">
       <Video codec="h264"
              bitRate="2000000"
-             width="864"
+             width="720"
              height="480"
              frameRate="30" />
 
@@ -170,6 +170,18 @@
              sampleRate="16000"
              channels="1" />
     </EncoderProfile>
+     <EncoderProfile quality="720p" fileFormat="3gp" duration="30">
+       <Video codec="h264"
+              bitRate="4000000"
+              width="1280"
+              height="720"
+              frameRate="15" />
+
+       <Audio codec="aac"
+              bitRate="156000"
+              sampleRate="48000"
+              channels="2" />
+     </EncoderProfile>
 
     <EncoderProfile quality="wvga" fileFormat="3gp" duration="30">
       <Video codec="h264"
@@ -238,9 +250,9 @@
 
     <EncoderProfile quality="timelapsehigh" fileFormat="3gp" duration="30">
       <Video codec="h264"
-             bitRate="20000000"
-             width="1920"
-             height="1088"
+             bitRate="2000000"
+             width="720"
+             height="480"
              frameRate="30" />
 
       <Audio codec="aac"
@@ -303,7 +315,7 @@
 
     <EncoderProfile quality="timelapse1080p" fileFormat="3gp" duration="30">
       <Video codec="h264"
-             bitRate="20000000"
+             bitRate="2000000"
              width="1920"
              height="1088"
              frameRate="30" />
@@ -330,7 +342,7 @@
     <ImageEncoding quality="90" />
     <ImageEncoding quality="80" />
     <ImageEncoding quality="70" />
-    <ImageDecoding memCap="20000000" />
+    <ImageDecoding memCap="2000000" />
 
   </CamcorderProfiles>
 
@@ -548,7 +560,7 @@
     <ImageEncoding quality="90" />
     <ImageEncoding quality="80" />
     <ImageEncoding quality="70" />
-    <ImageDecoding memCap="20000000" />
+    <ImageDecoding memCap="2000000" />
 
   </CamcorderProfiles>
 
@@ -560,9 +572,9 @@
          or query the capabilities of the codec at all if it is disabled
     -->
   <VideoEncoderCap name="h264" enabled="true"
-      minBitRate="64000" maxBitRate="20000000"
-      minFrameWidth="176" maxFrameWidth="1920"
-      minFrameHeight="144" maxFrameHeight="1088"
+      minBitRate="64000" maxBitRate="4000000"
+      minFrameWidth="176" maxFrameWidth="1280"
+      minFrameHeight="144" maxFrameHeight="720"
       minFrameRate="1" maxFrameRate="30" />
 
   <VideoEncoderCap name="h263" enabled="true"
@@ -572,9 +584,9 @@
       minFrameRate="1" maxFrameRate="30" />
 
   <VideoEncoderCap name="m4v" enabled="true"
-      minBitRate="64000" maxBitRate="20000000"
-      minFrameWidth="176" maxFrameWidth="1920"
-      minFrameHeight="144" maxFrameHeight="1088"
+      minBitRate="64000" maxBitRate="2000000"
+      minFrameWidth="176" maxFrameWidth="864"
+      minFrameHeight="144" maxFrameHeight="480"
       minFrameRate="1" maxFrameRate="30" />
 
   <AudioEncoderCap name="aac" enabled="true"
