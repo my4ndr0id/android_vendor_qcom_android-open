@@ -24,7 +24,7 @@
                          ExportVideoProfile)>
   <!ELEMENT CamcorderProfiles (EncoderProfile+, ImageEncoding+, ImageDecoding, Camera)>
   <!ELEMENT EncoderProfile (Video, Audio)>
-  <!ATTLIST EncoderProfile quality (timelapse1080p|timelapse720p|timelapse480p|timelapsehigh|timelapselow|480p|qcif|high|low) #REQUIRED>
+  <!ATTLIST EncoderProfile quality (timelapse1080p|timelapse720p|timelapse480p|timelapsehigh|timelapselow|timelapseqvga|480p|qcif|high|low) #REQUIRED>
   <!ATTLIST EncoderProfile fileFormat (mp4|3gp) #REQUIRED>
   <!ATTLIST EncoderProfile duration (30|60) #REQUIRED>
   <!ELEMENT Video EMPTY>
@@ -107,9 +107,9 @@
 
     <EncoderProfile quality="high" fileFormat="3gp" duration="30">
       <Video codec="h264"
-             bitRate="20000000"
-             width="1920"
-             height="1088"
+             bitRate="2000000"
+             width="864"
+             height="480"
              frameRate="30" />
 
       <Audio codec="aac"
@@ -305,6 +305,19 @@
              bitRate="20000000"
              width="1920"
              height="1088"
+             frameRate="30" />
+
+      <Audio codec="aac"
+             bitRate="96000"
+             sampleRate="16000"
+             channels="1" />
+    </EncoderProfile>
+
+    <EncoderProfile quality="timelapseqvga" fileFormat="3gp" duration="30">
+      <Video codec="h264"
+             bitRate="512000"
+             width="320"
+             height="240"
              frameRate="30" />
 
       <Audio codec="aac"
@@ -510,6 +523,19 @@
              bitRate="2000000"
              width="640"
              height="480"
+             frameRate="30" />
+
+      <Audio codec="aac"
+             bitRate="96000"
+             sampleRate="16000"
+             channels="1" />
+    </EncoderProfile>
+
+    <EncoderProfile quality="timelapseqvga" fileFormat="3gp" duration="30">
+      <Video codec="h264"
+             bitRate="512000"
+             width="320"
+             height="240"
              frameRate="30" />
 
       <Audio codec="aac"
